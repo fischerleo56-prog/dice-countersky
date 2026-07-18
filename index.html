@@ -80,8 +80,15 @@ document.addEventListener('keydown', (e) => {
 
 document.getElementById('skyBtn').addEventListener('click', () => {
   const label = document.getElementById('diceLabel');
-  label.textContent = label.textContent.trim() === 'SKY DER UNC' ? 'GARAMAS' : 'SKY DER UNC';
+  const nextName = label.textContent.trim() === 'SKY DER UNC' ? 'GARAMAS' : 'SKY DER UNC';
+  set(ref(db, "counterName"), nextName);
 });
+
+onValue(ref(db, "counterName"), (snapshot) => {
+  const value = snapshot.val();
+  document.getElementById('diceLabel').textContent = value || 'GARAMAS';
+});
+
 onValue(ref(db, "garamas"), (snapshot) => {
   const value = snapshot.val();
   n = value !== null ? Number(value) : 0;
