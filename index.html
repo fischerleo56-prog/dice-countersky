@@ -42,25 +42,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 let n = 0;
+let activeCounter = "garamas";
+
 function render(){
-let v=Math.round(n*100)/100;
-c.textContent=(v>0?'+':'')+v;
-if(v>0){c.style.color='#39d98a';}
-else if(v<0){c.style.color='#ff5f6d';}
-else{c.style.color='#ffd54a';}
-
+  let v=Math.round(n*100)/100;
+  c.textContent=(v>0?'+':'')+v;
+  if(v>0){c.style.color='#39d98a';}
+  else if(v<0){c.style.color='#ff5f6d';}
+  else{c.style.color='#ffd54a';}
+  document.getElementById('diceLabel').textContent =
+    activeCounter === "sky" ? "SKY DER UNC" : "GARAMAS";
 }
-function fly(t,c){let d=document.createElement('div');d.className='fly';d.style.color=c;d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),800);}function chg(v){
-    if(!isNaN(v)){
-        n += v;
 
-        set(ref(db, "garamas"), n);
+function fly(t,c){
+  let d=document.createElement('div');
+  d.className='fly'; d.style.color=c; d.textContent=t;
+  document.body.appendChild(d); setTimeout(()=>d.remove(),800);
+}
 
-        fly(
-            (v > 0 ? "+" : "") + v,
-            v > 0 ? "#39d98a" : "#ff5f6d"
-        );
-    }
+function chg(v){
+  if(!isNaN(v)){
+    n += v;
+    set(ref(db, "garamas"), n);
+    fly((v > 0 ? "+" : "") + v, v > 0 ? "#39d98a" : "#ff5f6d");
+  }
 }
 window.chg = chg;
 
@@ -72,23 +77,22 @@ document.addEventListener('keydown', (e) => {
       const btn = document.getElementById('skyBtn');
       btn.style.display = btn.style.display === 'block' ? 'none' : 'block';
       lastH = 0;
-    } else {
-      lastH = now;
-    }
+    } else lastH = now;
   }
 });
 
 document.getElementById('skyBtn').addEventListener('click', () => {
-  const label = document.getElementById('diceLabel');
-  const nextName = label.textContent.trim() === 'SKY DER UNC' ? 'GARAMAS' : 'SKY DER UNC';
-  set(ref(db, "counterName"), nextName);
+  const next = activeCounter === "sky" ? "garamas" : "sky";
+  set(ref(db, "activeCounter"), next);
 });
 
-onValue(ref(db, "counterName"), (snapshot) => {
-  const value = snapshot.val();
-  document.getElementById('diceLabel').textContent = value || 'GARAMAS';
+// Name/selection syncs across all open tabs/devices.
+onValue(ref(db, "activeCounter"), (snapshot) => {
+  activeCounter = snapshot.val() === "sky" ? "sky" : "garamas";
+  render();
 });
 
+// ONE shared number for both names, exactly like the original counter.
 onValue(ref(db, "garamas"), (snapshot) => {
   const value = snapshot.val();
   n = value !== null ? Number(value) : 0;
