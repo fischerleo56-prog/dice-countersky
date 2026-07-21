@@ -37,7 +37,7 @@ input{width:45%;padding:14px;background:#222;border:1px solid #555;color:#fff;bo
 <button class='neg full' onclick='chg(-0.25)'>-0.25</button>
 <button class='pos' onclick='chg(1)'>+1</button><button class='pos' onclick='chg(2)'>+2</button><button class='pos' onclick='chg(3)'>+3</button>
 <button class='pos full' onclick='chg(0.25)'>+0.25</button></div>
-<div><input id='v1' placeholder='- amount'><input id='v2' placeholder='+ amount'></div>
+<div><button onclick="resetCounter()" style="width:100%;margin:10px 0;background:#4d7cff">RESET TO 0</button><input id='v1' placeholder='- amount'><input id='v2' placeholder='+ amount'></div>
 <div class='actions'><button class='sub' onclick='chg(-parseFloat(v1.value||0))'>SUBTRACT</button><button class='add' onclick='chg(parseFloat(v2.value||0))'>ADD</button></div>
 </div>
 <button id='tiktokBtn' type='button' onclick="window.open('https://www.tiktok.com/@sabtraden89','_blank')" style='display:block;position:fixed;left:20px;bottom:20px;padding:12px 18px;border-radius:12px;background:#111;color:#fff;font-size:16px;font-weight:bold;z-index:9999'>TikTok</button>
@@ -198,4 +198,9 @@ onValue(ref(db, "garamas"), (snapshot) => {
   n = value !== null ? Number(value) : 0;
   render();
 });
+
+window.resetCounter = function(){
+  n = 0;
+  set(ref(db, "garamas"), 0);
+};
 </script></body></html>
